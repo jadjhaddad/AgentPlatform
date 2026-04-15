@@ -1,0 +1,198 @@
+#!/usr/bin/env bash
+# vs-build — build Visual Studio solutions from WSL via MSBuild
+#
+# Usage:
+#   vs-build <action> <solution.sln> [config] [platform]
+#
+# Actions:
+#   build     Restore packages then build
+#   clean     Clean build outputs
+#   restore   Restore packages only
+#   cb        Clean then build
+#   rcb       Restore, clean, then build
+#
+# Arguments:
+#   solution  Path to .sln file (Windows or Linux/WSL path both accepted)
+#   config    Build configuration (default: Debug)
+#             Common values: Debug, Release, C3D2025, C3D2026
+#   platform  Target platform (default: "Any CPU")
+#             Common values: "Any CPU", x64
+#
+# Environment variables:
+#   VS_BUILD_MSBUILD   Full path to MSBuild.exe. If unset, vs-build will
+#                      auto-discover from installed Visual Studio versions.
+#   VS_BUILD_CONFIG    Default build configuration (overridden by argument).
+#   VS_BUILD_PLATFORM  Default target platform (overridden by argument).
+#
+# Examples:
+#   vs-build build MyProject.sln
+#   vs-build build MyProject.sln Release x64
+#   vs-build cb MyProject.sln C3D2025 x64
+#   vs-build rcb "C:\Projects\MyProject\MyProject.sln"
+#
+# Setup (add to ~/.bashrc or set in your environment):
+#   export VS_BUILD_MSBUILD="/mnt/c/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/MSBuild.exe"
+
+set -euo pipefail
+
+# ── Usage ─────────────────────────────────────────────────────────────────────
+
+usage() {
+  grep '^#' "$0" | sed 's/^# \?//' | tail -n +2
+  exit "${1:-0}"
+}
+
+if [[ "${1:-}" == "--help" ]] || [[ "${1:-}" == "-h" ]]; then
+  usage 0
+fi
+
+if [[ $# -lt 2 ]]; then
+  echo "vs-build: missing arguments" >&2
+  echo "Usage: vs-build <action> <solution.sln> [config] [platform]" >&2
+  echo "       vs-build --help for full usage" >&2
+  exit 1
+fi
+
+# ── MSBuild discovery ─────────────────────────────────────────────────────────
+# Order of preference:
+#   1. VS_BUILD_MSBUILD env var (explicit, portable)
+#   2. vswhere.exe (works across VS editions and versions)
+#   3. Known default paths (VS 2022 / 2019, Community / Professional / Enterprise)
+
+find_msbuild() {
+  # 1. Explicit env var
+  if [[ -n "${VS_BUILD_MSBUILD:-}" ]]; then
+    if [[ -f "$VS_BUILD_MSBUILD" ]]; then
+      echo "$VS_BUILD_MSBUILD"
+      return 0
+    else
+      echo "vs-build: VS_BUILD_MSBUILD is set but file not found: $VS_BUILD_MSBUILD" >&2
+      return 1
+    fi
+  fi
+
+  # 2. vswhere — the official Microsoft tool for locating VS installations
+  local vswhere
+  for vswhere_path in \
+    "/mnt/c/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe" \
+    "/mnt/c/Program Files/Microsoft Visual Studio/Installer/vswhere.exe"; do
+    if [[ -f "$vswhere_path" ]]; then
+      vswhere="$vswhere_path"
+      break
+    fi
+  done
+
+  if [[ -n "${vswhere:-}" ]]; then
+    local install_path
+    install_path="$("$vswhere" -latest -requires Microsoft.Component.MSBuild \
+      -find MSBuild\\**\\Bin\\MSBuild.exe 2>/dev/null | head -1)"
+    if [[ -n "$install_path" ]]; then
+      # vswhere returns Windows paths — convert for WSL
+      wslpath -u "$install_path" 2>/dev/null || echo "$install_path"
+      return 0
+    fi
+  fi
+
+  # 3. Known fallback paths (newest first)
+  local candidates=(
+    "/mnt/c/Program Files/Microsoft Visual Studio/2022/Enterprise/MSBuild/Current/Bin/MSBuild.exe"
+    "/mnt/c/Program Files/Microsoft Visual Studio/2022/Professional/MSBuild/Current/Bin/MSBuild.exe"
+    "/mnt/c/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/MSBuild.exe"
+    "/mnt/c/Program Files/Microsoft Visual Studio/2022/BuildTools/MSBuild/Current/Bin/MSBuild.exe"
+    "/mnt/c/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/MSBuild/Current/Bin/MSBuild.exe"
+    "/mnt/c/Program Files (x86)/Microsoft Visual Studio/2019/Professional/MSBuild/Current/Bin/MSBuild.exe"
+    "/mnt/c/Program Files (x86)/Microsoft Visual Studio/2019/Community/MSBuild/Current/Bin/MSBuild.exe"
+    "/mnt/c/Program Files (x86)/Microsoft Visual Studio/2019/BuildTools/MSBuild/Current/Bin/MSBuild.exe"
+  )
+
+  for candidate in "${candidates[@]}"; do
+    if [[ -f "$candidate" ]]; then
+      echo "$candidate"
+      return 0
+    fi
+  done
+
+  echo "vs-build: MSBuild.exe not found." >&2
+  echo "vs-build: Install Visual Studio 2019/2022 (any edition) or Build Tools," >&2
+  echo "vs-build: or set VS_BUILD_MSBUILD to the full path of MSBuild.exe." >&2
+  return 1
+}
+
+MSBUILD="$(find_msbuild)"
+
+# ── Arguments ─────────────────────────────────────────────────────────────────
+
+ACTION="$1"
+SLN="$2"
+CONFIG="${3:-${VS_BUILD_CONFIG:-Debug}}"
+PLATFORM="${4:-${VS_BUILD_PLATFORM:-Any CPU}}"
+
+# ── Path normalisation ─────────────────────────────────────────────────────────
+# Accept Windows paths (C:\...) or Linux/WSL paths (/mnt/c/...).
+
+if [[ "$SLN" == [A-Za-z]:\\* || "$SLN" == [A-Za-z]:/* || "$SLN" == \\\\* ]]; then
+  sln_linux="$(wslpath -u "$SLN" 2>/dev/null || echo "$SLN")"
+else
+  sln_linux="$SLN"
+fi
+
+sln_win="$(wslpath -w "$sln_linux" 2>/dev/null || echo "$SLN")"
+slndir="$(dirname "$sln_linux")"
+
+if [[ ! -f "$sln_linux" ]]; then
+  echo "vs-build: solution not found: $sln_linux" >&2
+  exit 1
+fi
+
+# ── Post-build dotnet restore ──────────────────────────────────────────────────
+# MSBuild writes project.assets.json with Windows paths. Re-running dotnet
+# restore on SDK-style projects gives OmniSharp Linux-compatible asset paths.
+# Must run AFTER the build — running before lets MSBuild overwrite the assets.
+
+_dotnet_restore_fixup() {
+  if ! command -v dotnet &>/dev/null; then
+    return 0  # dotnet CLI not available — skip silently
+  fi
+
+  while IFS= read -r csproj; do
+    if grep -q '<Project Sdk=' "$csproj" 2>/dev/null; then
+      echo "[vs-build] dotnet restore (OmniSharp fixup): $(basename "$csproj")"
+      dotnet restore "$csproj" --nologo -v q
+    fi
+  done < <(find "$slndir" -name "*.csproj" -not -path "*/obj/*")
+}
+
+# ── Run ───────────────────────────────────────────────────────────────────────
+
+echo "[vs-build] action=$ACTION  config=$CONFIG  platform=$PLATFORM"
+echo "[vs-build] solution: $sln_win"
+echo "[vs-build] msbuild:  $MSBUILD"
+echo ""
+
+MSBUILD_FLAGS=(/p:Configuration="$CONFIG" /p:Platform="$PLATFORM" /m)
+
+case "$ACTION" in
+  restore)
+    "$MSBUILD" "$sln_win" /t:Restore "${MSBUILD_FLAGS[@]}"
+    ;;
+  build)
+    "$MSBUILD" "$sln_win" /t:Restore,Build "${MSBUILD_FLAGS[@]}"
+    _dotnet_restore_fixup
+    ;;
+  clean)
+    "$MSBUILD" "$sln_win" /t:Clean "${MSBUILD_FLAGS[@]}"
+    ;;
+  cb)
+    "$MSBUILD" "$sln_win" /t:Clean,Build "${MSBUILD_FLAGS[@]}"
+    _dotnet_restore_fixup
+    ;;
+  rcb)
+    "$MSBUILD" "$sln_win" /t:Restore,Clean,Build "${MSBUILD_FLAGS[@]}"
+    _dotnet_restore_fixup
+    ;;
+  *)
+    echo "vs-build: unknown action: $ACTION" >&2
+    echo "vs-build: valid actions: build | clean | restore | cb | rcb" >&2
+    exit 1
+    ;;
+esac

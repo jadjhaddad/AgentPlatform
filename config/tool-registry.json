@@ -1,0 +1,41 @@
+{
+  "version": "1.0.0",
+  "tools": [
+    {
+      "id": "vs-build",
+      "name": "vs-build",
+      "path": "tools/vs-build/vs-build",
+      "description": "Build Visual Studio solutions from WSL via MSBuild",
+      "platform": ["wsl", "linux"],
+      "actions": {
+        "build":   "Restore packages then build",
+        "clean":   "Clean build outputs",
+        "restore": "Restore packages only",
+        "cb":      "Clean then build",
+        "rcb":     "Restore, clean, then build"
+      },
+      "args": {
+        "positional": ["action", "solution", "config?", "platform?"]
+      },
+      "env": [
+        {
+          "key": "VS_BUILD_MSBUILD",
+          "required": false,
+          "description": "Full path to MSBuild.exe. Auto-discovered via vswhere if unset."
+        },
+        {
+          "key": "VS_BUILD_CONFIG",
+          "required": false,
+          "description": "Default build configuration. Overridden by the config argument. Default: Debug."
+        },
+        {
+          "key": "VS_BUILD_PLATFORM",
+          "required": false,
+          "description": "Default target platform. Overridden by the platform argument. Default: Any CPU."
+        }
+      ],
+      "safety_level": "safe",
+      "owner": "jjhaddad"
+    }
+  ]
+}
