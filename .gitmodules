@@ -1,0 +1,9 @@
+[submodule "mcps/azdo-mcp"]
+	path = mcps/azdo-mcp
+	url = https://github.com/jadjhaddad/azdo-mcp.git
+[submodule "mcps/dotnet-inspector-mcp"]
+	path = mcps/dotnet-inspector-mcp
+	url = https://github.com/jadjhaddad/dotnet-inspector-mcp.git
+[submodule "mcps/dotnet-docs-mcp"]
+	path = mcps/dotnet-docs-mcp
+	url = https://github.com/jadjhaddad/dotnet-docs-mcp.git

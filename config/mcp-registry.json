@@ -1,0 +1,47 @@
+{
+  "version": "1.0.0",
+  "mcps": [
+    {
+      "id": "azdo-mcp",
+      "name": "Azure DevOps MCP",
+      "path": "mcps/azdo-mcp",
+      "start": "node dist/index.js",
+      "transport": "stdio",
+      "capabilities": ["azure-devops", "work-items", "projects"],
+      "health_tool": "health_check",
+      "env": [
+        { "key": "AZDO_ORG_URL", "required": true, "description": "Azure DevOps organisation URL" }
+      ],
+      "repo": "https://github.com/jadjhaddad/azdo-mcp",
+      "owner": "jjhaddad"
+    },
+    {
+      "id": "dotnet-inspector-mcp",
+      "name": ".NET Inspector MCP",
+      "path": "mcps/dotnet-inspector-mcp",
+      "start": "dotnet DllInspectorMcp.dll",
+      "transport": "stdio",
+      "capabilities": ["dll-inspection", "type-search", "member-search", "autodesk-apis"],
+      "health_tool": "health_check",
+      "env": [
+        { "key": "DB_PATH", "required": false, "description": "Path to SQLite database. Defaults to dll_inspector.db next to the executable." }
+      ],
+      "repo": "https://github.com/jadjhaddad/dotnet-inspector-mcp",
+      "owner": "jjhaddad"
+    },
+    {
+      "id": "dotnet-docs-mcp",
+      "name": ".NET Docs MCP",
+      "path": "mcps/dotnet-docs-mcp",
+      "start": "node dist/index.js",
+      "transport": "stdio",
+      "capabilities": ["api-docs", "xml-docs", "doc-search"],
+      "health_tool": "health_check",
+      "env": [
+        { "key": "INDEX_PATH", "required": false, "description": "Path to persistent index file. Defaults to ~/.helpfile-mcp/index.json" }
+      ],
+      "repo": "https://github.com/jadjhaddad/dotnet-docs-mcp",
+      "owner": "jjhaddad"
+    }
+  ]
+}
