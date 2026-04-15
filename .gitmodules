@@ -7,3 +7,6 @@
 [submodule "mcps/dotnet-docs-mcp"]
 	path = mcps/dotnet-docs-mcp
 	url = https://github.com/jadjhaddad/dotnet-docs-mcp.git
+[submodule "mcps/eng-standards-mcp"]
+	path = mcps/eng-standards-mcp
+	url = https://github.com/jadjhaddad/eng-standards-mcp.git

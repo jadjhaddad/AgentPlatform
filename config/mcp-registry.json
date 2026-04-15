@@ -42,6 +42,20 @@
       ],
       "repo": "https://github.com/jadjhaddad/dotnet-docs-mcp",
       "owner": "jjhaddad"
+    },
+    {
+      "id": "eng-standards-mcp",
+      "name": "Engineering Standards MCP",
+      "path": "mcps/eng-standards-mcp",
+      "start": "node dist/index.js",
+      "transport": "stdio",
+      "capabilities": ["engineering-standards", "section-lookup", "keyword-search", "semantic-search", "toc-navigation"],
+      "health_tool": "health_check",
+      "env": [
+        { "key": "DB_PATH", "required": false, "description": "Path to SQLite database. Defaults to ./data/codes.db next to the package." }
+      ],
+      "repo": "https://github.com/jadjhaddad/eng-standards-mcp",
+      "owner": "jjhaddad"
     }
   ]
 }
