@@ -1,5 +1,5 @@
 ---
-description: .NET Inspector specialist — introspects Autodesk API DLLs for type signatures, members, and inheritance before writing plugin code
+description: .NET Inspector specialist — introspects Autodesk, CSi, and Dynamo DLLs for type signatures, members, and inheritance. Always call this in the Plan phase before writing any Autodesk/CSi API code to discover what the DLL actually exposes.
 permission:
     edit: allow
     bash: allow
