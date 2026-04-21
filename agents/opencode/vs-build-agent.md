@@ -46,3 +46,38 @@ Report: error code, file, line number, exact message verbatim. Do not paraphrase
 - Always `x64` for Autodesk projects
 - Prefer `rcb` when in doubt
 - Also flag `warning CS0618` (deprecated API) as noteworthy
+
+## Troubleshooting: `vs-build: command not found` (exit 127)
+
+If the tool is missing from PATH, work through this checklist:
+
+**1. Check if vs-build is installed**
+```bash
+which vs-build
+ls ~/.local/bin/vs-build 2>/dev/null || ls /usr/local/bin/vs-build 2>/dev/null
+```
+
+**2. Install if missing** — vs-build is a shell script in the AgentPlatform repo:
+```bash
+# Add tools/ to PATH, or symlink the script
+ln -sf /mnt/c/Users/jjhaddad/Documents/Work/AgentPlatform/tools/vs-build /usr/local/bin/vs-build
+chmod +x /usr/local/bin/vs-build
+```
+
+**3. Validate the install**
+```bash
+vs-build --help
+```
+
+**4. WSL/Windows requirements for Revit plugin builds**
+- MSBuild must be accessible from WSL — typically via a Windows path like `/mnt/c/Program Files/Microsoft Visual Studio/2022/Professional/MSBuild/Current/Bin/MSBuild.exe`
+- `vs-build` calls MSBuild on the Windows side; the solution path must be a Windows-accessible path
+- Revit `RVT2025`/`RVT2026` configs require the Revit SDK DLLs to be present at the paths defined in `Directory.Build.props` or the `.csproj`
+- Deployment (AfterBuild copy targets) requires the target Revit install directory to exist on the Windows side
+
+**5. Fallback: direct MSBuild call**
+```bash
+"/mnt/c/Program Files/Microsoft Visual Studio/2022/Professional/MSBuild/Current/Bin/MSBuild.exe" \
+  "/root/test/HelloWorldRevit/HelloWorldRevit.sln" \
+  /p:Configuration=RVT2025 /p:Platform=x64 /restore /v:m
+```

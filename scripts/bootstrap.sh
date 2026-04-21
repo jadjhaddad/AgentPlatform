@@ -51,7 +51,19 @@ build_mcp "$REPO_ROOT/mcps/aec-scaffold-mcp"
 build_mcp "$REPO_ROOT/mcps/azdo-mcp"
 build_mcp "$REPO_ROOT/mcps/dotnet-docs-mcp"
 
-# ── 4. Build dar-cli ─────────────────────────────────────────────────────────
+# ── 4. Install vs-build ──────────────────────────────────────────────────────
+echo ""
+echo "Installing vs-build..."
+VS_BUILD_SRC="$REPO_ROOT/tools/vs-build/vs-build"
+if [[ -f "$VS_BUILD_SRC" ]]; then
+    chmod +x "$VS_BUILD_SRC"
+    ln -sf "$VS_BUILD_SRC" /usr/local/bin/vs-build
+    echo "  ✓ vs-build → /usr/local/bin/vs-build"
+else
+    echo "  ! vs-build script not found at $VS_BUILD_SRC"
+fi
+
+# ── 5. Build dar-cli ─────────────────────────────────────────────────────────
 echo ""
 echo "Building dar-cli..."
 DAR_CLI_DIR="$REPO_ROOT/tools/dar-cli/src/DAR.Cli"
