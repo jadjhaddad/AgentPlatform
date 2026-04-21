@@ -1,0 +1,43 @@
+{
+  "mcpServers": {
+    "azdo-mcp": {
+      "type": "stdio",
+      "command": "node",
+      "args": ["/mnt/c/Users/jjhaddad/Documents/Work/AgentPlatform/mcps/azdo-mcp/dist/index.js"],
+      "env": {
+        "AZDO_ORG_URL": "https://dev.azure.com/Dar-Internal-Digital-Products",
+        "ENABLE_DELETE": "true",
+        "AZDO_DISABLE_PROXY": "true",
+        "AZDO_API_VERSION": "7.1"
+      }
+    },
+    "eng-standards-mcp": {
+      "type": "stdio",
+      "command": "node",
+      "args": ["/mnt/c/Users/jjhaddad/Documents/Work/AgentPlatform/mcps/eng-standards-mcp/dist/index.js"],
+      "env": {
+        "DB_PATH": "/mnt/c/Users/jjhaddad/Documents/Work/AgentPlatform/mcps/eng-standards-mcp/data/codes.db"
+      }
+    },
+    "dotnet-inspector-mcp": {
+      "type": "stdio",
+      "command": "/mnt/c/Users/jjhaddad/Documents/Work/AgentPlatform/mcps/dotnet-inspector-mcp/bin/Release/net10.0/DllInspectorMcp",
+      "args": [],
+      "env": {}
+    },
+    "dotnet-docs-mcp": {
+      "type": "stdio",
+      "command": "node",
+      "args": ["/mnt/c/Users/jjhaddad/Documents/Work/AgentPlatform/mcps/dotnet-docs-mcp/dist/index.js"],
+      "env": {}
+    },
+    "aec-scaffold-mcp": {
+      "type": "stdio",
+      "command": "node",
+      "args": ["/mnt/c/Users/jjhaddad/Documents/Work/AgentPlatform/mcps/aec-scaffold-mcp/dist/index.js"],
+      "env": {
+        "AEC_CLI_PATH": "/mnt/c/Users/jjhaddad/Documents/Work/AgentPlatform/tools/dar-cli/src/DAR.Cli/bin/Release/net10.0/aec"
+      }
+    }
+  }
+}

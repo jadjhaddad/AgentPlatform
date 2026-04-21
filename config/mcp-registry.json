@@ -44,6 +44,20 @@
       "owner": "jjhaddad"
     },
     {
+      "id": "aec-scaffold-mcp",
+      "name": "AEC Scaffold MCP",
+      "path": "mcps/aec-scaffold-mcp",
+      "start": "node dist/index.js",
+      "transport": "stdio",
+      "capabilities": ["scaffold", "aec-plugins", "revit", "civil3d", "csi", "dynamo", "upgrade", "deploy"],
+      "health_tool": "health_check",
+      "env": [
+        { "key": "AEC_CLI_PATH", "required": false, "description": "Path to aec binary. Auto-discovered if unset." }
+      ],
+      "repo": "https://github.com/jadjhaddad/aec-scaffold-mcp",
+      "owner": "jjhaddad"
+    },
+    {
       "id": "eng-standards-mcp",
       "name": "Engineering Standards MCP",
       "path": "mcps/eng-standards-mcp",
