@@ -85,7 +85,7 @@ find_msbuild() {
   if [[ -n "${vswhere:-}" ]]; then
     local install_path
     install_path="$("$vswhere" -latest -requires Microsoft.Component.MSBuild \
-      -find MSBuild\\**\\Bin\\MSBuild.exe 2>/dev/null | head -1)"
+      -find MSBuild\\**\\Bin\\MSBuild.exe 2>/dev/null | head -1 | tr -d '\r')"
     if [[ -n "$install_path" ]]; then
       # vswhere returns Windows paths — convert for WSL
       wslpath -u "$install_path" 2>/dev/null || echo "$install_path"
