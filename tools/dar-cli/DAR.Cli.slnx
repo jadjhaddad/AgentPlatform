@@ -1,0 +1,5 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/DAR.Cli/DAR.Cli.csproj" />
+  </Folder>
+</Solution>

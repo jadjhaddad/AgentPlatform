@@ -10,3 +10,6 @@
 [submodule "mcps/eng-standards-mcp"]
 	path = mcps/eng-standards-mcp
 	url = https://github.com/jadjhaddad/eng-standards-mcp.git
+[submodule "mcps/aec-scaffold-mcp"]
+	path = mcps/aec-scaffold-mcp
+	url = https://github.com/jadjhaddad/aec-scaffold-mcp.git

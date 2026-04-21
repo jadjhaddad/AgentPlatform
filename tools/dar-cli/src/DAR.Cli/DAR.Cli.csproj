@@ -1,0 +1,75 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+
+    <!--
+      ╔══════════════════════════════════════════════════════════════════════╗
+      ║  WHITE-LABEL INSTRUCTIONS                                           ║
+      ║  To rebrand this tool for your organisation:                        ║
+      ║    1. Edit Brand/BrandConfig.cs  (name, defaults, colors, logo)     ║
+      ║    2. Replace Assets/<logo>.png with your logo (update LogoFileName ║
+      ║       in BrandConfig.cs and the EmbeddedResource Include below)     ║
+      ║    3. Change the three values below to match your brand             ║
+      ║    4. Run scripts/update-source.sh then dotnet pack                 ║
+      ╚══════════════════════════════════════════════════════════════════════╝
+    -->
+    <AssemblyName>aec</AssemblyName>          <!-- CLI binary name on PATH   -->
+    <ToolCommandName>aec</ToolCommandName>    <!-- `dotnet tool` invocation   -->
+    <PackageId>AEC.Cli</PackageId>           <!-- NuGet package ID           -->
+
+    <RootNamespace>DAR.Cli</RootNamespace>    <!-- internal namespace — doesn't need to match PackageId -->
+    <PackAsTool Condition="'$(PackAsTool)'==''">false</PackAsTool>
+    <Version>1.3.1</Version>
+    <Description>AEC plugin scaffolding CLI — scaffold Revit, Civil 3D, CSi, and Dynamo plugins</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Spectre.Console" Version="0.49.1" />
+    <PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Logo asset — add your own PNG here and set BrandConfig.LogoFileName to match -->
+    <!-- <EmbeddedResource Include="Assets\YourLogo.png"/> -->
+    <!-- Source snapshot for `brand` command — committed to repo, regenerated via scripts/update-source.sh -->
+    <EmbeddedResource Include="Assets\source.zip"/>
+  </ItemGroup>
+
+  <!--
+    PackSourceSnapshot: zip the src/ tree into Assets/source.zip so the `brand`
+    command can extract and patch it regardless of where the tool is installed.
+    Tip: run scripts/update-source.sh manually to refresh without a full pack.
+  -->
+  <Target Name="PackSourceSnapshot" BeforeTargets="BeforeBuild" Condition="'$(PackAsTool)'=='true'">
+    <Message Text="[brand] Snapshotting source into Assets/source.zip..." Importance="high"/>
+    <MakeDir Directories="$(MSBuildProjectDirectory)/Assets"/>
+    <PropertyGroup>
+      <_SourceRoot>$([System.IO.Path]::GetFullPath('$(MSBuildProjectDirectory)/../..'))</_SourceRoot>
+      <_ZipOut>$(MSBuildProjectDirectory)/Assets/source.zip</_ZipOut>
+      <_ZipScript>
+import os, zipfile, sys
+root = sys.argv[1]
+out  = sys.argv[2]
+with zipfile.ZipFile(out, 'w', zipfile.ZIP_DEFLATED) as z:
+    for dirpath, dirnames, filenames in os.walk(os.path.join(root,'src')):
+        dirnames[:] = [d for d in dirnames if d not in ('bin','obj')]
+        for fn in filenames:
+            if fn == 'source.zip': continue
+            fp = os.path.join(dirpath, fn)
+            arcname = 'src/' + os.path.relpath(fp, os.path.join(root,'src')).replace(os.sep,'/')
+            z.write(fp, arcname)
+print('source.zip written:', out)
+      </_ZipScript>
+    </PropertyGroup>
+    <WriteLinesToFile File="$(MSBuildProjectDirectory)/Assets/_zip.py" Lines="$(_ZipScript)" Overwrite="true"/>
+    <Exec Command="python3 &quot;$(MSBuildProjectDirectory)/Assets/_zip.py&quot; &quot;$(_SourceRoot)&quot; &quot;$(_ZipOut)&quot;"/>
+    <Delete Files="$(MSBuildProjectDirectory)/Assets/_zip.py"/>
+    <Message Text="[brand] source.zip ready." Importance="high"/>
+  </Target>
+
+</Project>
