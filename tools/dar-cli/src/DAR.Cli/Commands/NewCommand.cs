@@ -35,11 +35,18 @@ public static class NewCommand
         cmd.AddOption(authorOpt);
         cmd.AddOption(descriptionOpt);
 
-        cmd.SetHandler((
-            string? name, string? output, bool ni,
-            string? host, string? pluginType, string? versions,
-            string? comHosts, string? author, string? description) =>
+        cmd.SetHandler((System.CommandLine.Invocation.InvocationContext ctx) =>
         {
+            var name        = ctx.ParseResult.GetValueForArgument(nameArg);
+            var output      = ctx.ParseResult.GetValueForOption(outputOpt);
+            var ni          = ctx.ParseResult.GetValueForOption(nonInteractive);
+            var host        = ctx.ParseResult.GetValueForOption(hostOpt);
+            var pluginType  = ctx.ParseResult.GetValueForOption(pluginTypeOpt);
+            var versions    = ctx.ParseResult.GetValueForOption(versionsOpt);
+            var comHosts    = ctx.ParseResult.GetValueForOption(comHostsOpt);
+            var author      = ctx.ParseResult.GetValueForOption(authorOpt);
+            var description = ctx.ParseResult.GetValueForOption(descriptionOpt);
+
             try
             {
                 ProjectConfig config;
@@ -68,10 +75,10 @@ public static class NewCommand
                 AnsiConsole.Status()
                     .Spinner(Spinner.Known.Dots)
                     .SpinnerStyle(Style.Parse("teal"))
-                    .Start($"Scaffolding [teal]{config.ProjectName}[/]...", ctx =>
+                    .Start($"Scaffolding [teal]{config.ProjectName}[/]...", statusCtx =>
                     {
                         scaffolder.Scaffold();
-                        ctx.Status("Initialising git repository...");
+                        statusCtx.Status("Initialising git repository...");
                         InitGit(config);
                     });
 
@@ -85,7 +92,7 @@ public static class NewCommand
                 AnsiConsole.MarkupLine($"[red]Error:[/] {ex.Message}");
                 Environment.Exit(1);
             }
-        }, nameArg, outputOpt, nonInteractive, hostOpt, pluginTypeOpt, versionsOpt, comHostsOpt, authorOpt, descriptionOpt);
+        });
 
         return cmd;
     }

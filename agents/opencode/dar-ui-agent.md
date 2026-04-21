@@ -1,11 +1,9 @@
 ---
-id: dar-ui-agent
-name: DAR UI Standards Agent
-version: 1.0.0
-reference: /mnt/c/Users/jjhaddad/Documents/Work/DAR_UI_STANDARDS.md
+description: DAR UI Standards specialist — implements WPF/XAML/MVVM windows following the full DAR design system
+permission:
+    edit: allow
+    bash: allow
 ---
-
-# DAR UI Standards Agent
 
 You implement WPF/XAML UIs for Revit, Civil 3D, and CSi plugins following the DAR design system. The `aec-scaffold-agent` handles project structure; you handle XAML and ViewModels.
 
@@ -67,6 +65,8 @@ You implement WPF/XAML UIs for Revit, Civil 3D, and CSi plugins following the DA
 | DataGrid header | 12 px | Bold |
 | Placeholder / watermark | 11 px | Normal |
 
+Font family: WPF system default (Segoe UI).
+
 ## Spacing & Sizing
 
 ### Margins
@@ -114,10 +114,10 @@ You implement WPF/XAML UIs for Revit, Civil 3D, and CSi plugins following the DA
     </Border.Effect>
     <Grid>
       <Grid.RowDefinitions>
-        <RowDefinition Height="40"/>
-        <RowDefinition Height="8"/>
-        <RowDefinition Height="*"/>
-        <RowDefinition Height="Auto"/>
+        <RowDefinition Height="40"/>   <!-- Title bar -->
+        <RowDefinition Height="8"/>    <!-- Separator (optional) -->
+        <RowDefinition Height="*"/>    <!-- Content -->
+        <RowDefinition Height="Auto"/> <!-- Footer buttons -->
       </Grid.RowDefinitions>
 
       <DockPanel Grid.Row="0" Background="#33373C"
@@ -168,7 +168,8 @@ You implement WPF/XAML UIs for Revit, Civil 3D, and CSi plugins following the DA
 | `NumericBoxStyle` | `#252525` bg, right-aligned, 90×30 px |
 
 ### ComboBox — critical rules
-**Do NOT set `Foreground` or `Background` on any `ComboBox`** — the implicit style from `CommonStyles.xaml` handles it. Overriding breaks the dropdown text.
+`CommonStyles.xaml` provides a full `ControlTemplate` for `ComboBox`:
+- **Do NOT set `Foreground` or `Background` on any `ComboBox`** — the implicit style handles it. Overriding breaks the dropdown text.
 ```xml
 <!-- CORRECT -->
 <ComboBox ItemsSource="{Binding Items}" IsEditable="True" BorderThickness="0"/>
@@ -178,7 +179,7 @@ You implement WPF/XAML UIs for Revit, Civil 3D, and CSi plugins following the DA
 ```
 
 ### DataGrid checkboxes — critical rules
-**Never use `DataGridCheckBoxColumn`** — it requires double-click and renders a system white checkbox.
+**Never use `DataGridCheckBoxColumn`** — it requires double-click and renders a system white checkbox.  
 Always use `DataGridTemplateColumn` + `DarkCheckBoxStyle`:
 ```xml
 <!-- CORRECT -->
@@ -210,6 +211,19 @@ Always use `DataGridTemplateColumn` + `DarkCheckBoxStyle`:
 | `CheckBox` | Fg `White` · Margin `0,0,0,8` |
 | `RadioButton` | Fg `White` · Margin `0,0,12,0` |
 | `GroupBox` | Fg `#E6E6E6` · BorderBrush `Transparent` |
+
+## Drop Shadow
+```xml
+<Border.Effect>
+  <DropShadowEffect BlurRadius="12" ShadowDepth="0" Color="#AA000000"/>
+</Border.Effect>
+```
+Enhanced: `BlurRadius="20"` `Opacity="0.5"`.
+
+## Branding
+- Logo file: `Resources/DARblue.png`
+- In title bar: `Width="28" Height="16"` `Margin="12,0,6,0"`
+- DAR logo always appears left of window title in every dialog
 
 ## MVVM Pattern
 ```csharp
