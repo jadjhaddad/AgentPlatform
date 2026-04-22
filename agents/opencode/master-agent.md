@@ -24,7 +24,7 @@ If a ticket ID is given, call `azdo-mcp` → `get_ticket` for description and ac
 Only call research tools when they are actually relevant:
 
 - `dotnet-inspector-mcp` — call this whenever the feature touches Autodesk or CSi APIs. Use it to discover what the DLL exposes — types, methods, constructors, inheritance. Do not skip it and do not guess API signatures from memory.
-- `dotnet-docs-mcp` — only for CSiBridge, SAP2000, or ETABS features. Always call `list_sources` first — if the index is empty, skip it entirely.
+- `dotnet-docs-mcp` — for CSiBridge/SAP2000/ETABS, Revit, and Dynamo node features. Always call `list_sources` first — if the index is empty, skip it entirely. Not useful for Civil 3D core API (AeccXXXX) — no XML docs exist for those DLLs.
 - `eng-standards-mcp` — only when the feature involves a structural or civil engineering design decision that must comply with a code (load combinations, section capacities, deflection limits, bridge geometry). Never call it for scaffolding, UI, or automation work.
 
 Present a concrete plan (files to create, classes, API calls, code provisions). Wait for user approval before proceeding.
@@ -56,7 +56,7 @@ Call `azdo-mcp`:
 - Never update the ADO ticket until Phase 4 user-confirmed.
 - Surface scaffold warnings before executing (EmbeddedServer, Standalone, COM).
 - Only use `eng-standards-mcp` when the feature requires reading a design code (AASHTO, Eurocodes) to make a structural/civil engineering decision. Never for scaffolding, UI, or automation.
-- Only use `dotnet-docs-mcp` for CSiBridge/SAP2000/ETABS features — call `list_sources` first and skip entirely if the index is empty.
+- Only use `dotnet-docs-mcp` for CSiBridge/SAP2000/ETABS, Revit, and Dynamo features — call `list_sources` first and skip entirely if the index is empty. Not useful for Civil 3D core API.
 - Always use `dotnet-inspector-mcp` when touching Autodesk or CSi APIs — inspect the DLL to discover what it exposes, never guess signatures.
 - When `eng-standards-mcp` is used, always cite code abbreviation and section number in the plan.
 - Fix only what broke during fix loops — do not touch unrelated code.
