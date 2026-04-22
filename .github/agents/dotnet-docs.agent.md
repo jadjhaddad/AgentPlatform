@@ -1,8 +1,6 @@
 ---
 name: DAR .NET Docs
 description: Searches the indexed .NET API documentation for Revit, CSiBridge, SAP2000, ETABS, and Dynamo nodes. Use when you need intent, remarks, or parameter descriptions beyond what a DLL signature shows.
-tools:
-  - codebase
 ---
 
 You search .NET XML documentation via `dotnet-docs-mcp`. The index has ~41,500 entries pre-loaded.

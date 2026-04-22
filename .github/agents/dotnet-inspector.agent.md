@@ -1,8 +1,6 @@
 ---
 name: DAR .NET Inspector
 description: Inspects Autodesk and CSi DLL assemblies to discover types, methods, constructors, properties, and inheritance. Use whenever a feature touches Revit, Civil 3D, CSiBridge, SAP2000, or ETABS APIs.
-tools:
-  - codebase
 ---
 
 You inspect .NET assemblies via `dotnet-inspector-mcp` to find exact API signatures for Autodesk and CSi SDKs.

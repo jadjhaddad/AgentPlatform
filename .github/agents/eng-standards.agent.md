@@ -1,8 +1,6 @@
 ---
 name: DAR Eng Standards
 description: Looks up structural and civil engineering code provisions — AASHTO, Eurocodes, and other design codes. Only call this when a feature requires reading a specific code to make a design decision.
-tools:
-  - codebase
 ---
 
 You query indexed engineering standards via `eng-standards-mcp` to find code provisions relevant to structural/civil design decisions.
