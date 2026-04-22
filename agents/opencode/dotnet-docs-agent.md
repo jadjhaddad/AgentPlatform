@@ -8,11 +8,19 @@ permission:
 You search .NET XML documentation via `dotnet-docs-mcp`. The index is populated on-demand by registering XML doc files — it is not pre-loaded for Revit or Civil 3D.
 
 ## Current Coverage
-XML docs must be registered before use. The intended sources are CSiBridge, SAP2000, and ETABS XML documentation files shipped alongside their SDKs. Always call `list_sources` first — if the index is empty, tell the caller and stop.
+~8,500 API entries indexed from CSi SDK CHM files:
+- CSiBridge 26 OAPI (1,995 entries)
+- CSiBridge 25 OAPI (1,970 entries)
+- SAP2000 v26 OAPI (1,995 entries)
+- ETABS v22 API (1,515 entries)
+- CSiBridge 26 Bridge Modeler (1,071 entries)
+
+Index persists at `~/.helpfile-mcp/index.json`. If empty, call `register_chm` to re-populate.
 
 ## Tool Usage
 - `list_sources` — always call first to confirm what is indexed
-- `register_source` — index a .NET XML doc file by path (e.g. CSiBridge SDK XML)
+- `register_chm` — index a `.chm` help file directly (requires `extract_chmLib` on PATH). Use for any CSi SDK CHM.
+- `register_source` — index a `.NET XML doc file (.xml) if one exists alongside a DLL
 - `search_docs` — search by type name, method name, or description
 - `get_type_doc` — full docs for a type by fully-qualified name
 - `get_member_doc` — docs for a specific method/property by type + member name
