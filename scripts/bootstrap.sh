@@ -16,9 +16,19 @@ mkdir -p "$OPENCODE_AGENTS_DIR"
 
 for src in "$REPO_ROOT/agents/opencode/"*.md; do
     name="$(basename "$src")"
-    dest="$OPENCODE_AGENTS_DIR/$name"
-    cp "$src" "$dest"
-    echo "  ✓ $name"
+    cp "$src" "$OPENCODE_AGENTS_DIR/$name"
+    echo "  ✓ opencode: $name"
+done
+
+# ── 1b. Sync Claude Code global agents ──────────────────────────────────────
+echo "Syncing Claude Code global agents..."
+CLAUDE_AGENTS_DIR="$HOME/.claude/agents"
+mkdir -p "$CLAUDE_AGENTS_DIR"
+
+for src in "$REPO_ROOT/.claude/agents/"*.md; do
+    name="$(basename "$src")"
+    cp "$src" "$CLAUDE_AGENTS_DIR/$name"
+    echo "  ✓ claude: $name"
 done
 
 # ── 2. Set default_agent to master-agent ────────────────────────────────────
