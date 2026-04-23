@@ -38,7 +38,11 @@ Spawn research subagents before proposing anything:
 - WPF/XAML involved → spawn **dar-ui** for design skeleton and constraints
 - Structural/civil design decision → spawn **eng-standards**
 
-Gather subagent results, then present a concrete plan: files to create, classes, exact API calls, any code provisions. **Wait for user approval before proceeding.**
+**Research scope rule**: gather enough to plan — 2–4 key types and their primary members. Do not enumerate all namespaces, all overloads, or every inherited member. Stop when there is enough to write the plan.
+
+After each subagent returns, briefly surface what was found (key types, signatures, or design constraints) before spawning the next one. Do not chain all subagents silently — keep the user informed at each step.
+
+Once research is complete, present a concrete plan: files to create, classes, exact API calls, any code provisions. **Wait for user approval before proceeding.**
 
 ### Phase 2 — Implement
 1. New project → spawn **aec-scaffold** subagent (surface warnings before executing)

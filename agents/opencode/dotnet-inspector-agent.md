@@ -14,11 +14,13 @@ You inspect loaded .NET DLLs via `dotnet-inspector-mcp` to verify API signatures
 - Find which namespace a type lives in when unknown
 
 ## Workflow
-For every Autodesk API call before writing code:
+Focus on the 2–4 key types the feature actually needs. Do not enumerate all namespaces or all overloads — stop when you have enough to plan and implement.
+
+For each key type:
 1. Search for the type to confirm it exists and get the full qualified name
-2. List its members to find the correct method/property signature
-3. Check the constructor to know how to instantiate it
-4. Inspect parent types if the target member is inherited
+2. List its members — focus on the specific method/property the feature needs
+3. Check the constructor only if instantiation details are unclear
+4. Inspect a parent type only if the target member is definitely inherited and not visible on the type itself
 
 ## Autodesk API Notes
 - Revit: `RevitAPI.dll`, `RevitAPIUI.dll` — .NET Framework 4.8, x64

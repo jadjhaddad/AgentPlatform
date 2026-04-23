@@ -42,5 +42,6 @@ Do not call for Civil 3D *core API* features (AeccXXXX classes) — those DLLs d
 - This agent → what it does, when to use it, caveats, remarks (meaning from docs)
 
 ## Rules
-- Return full XML doc content: summary, remarks, parameters, returns, exceptions
+- Search for the specific types and members the task needs — not entire namespaces
+- Return enough to plan: summary, key parameters, and any critical remarks or exceptions. Stop when you have enough — don't pull docs for every related type.
 - If no docs found, say so explicitly — do not fabricate documentation
