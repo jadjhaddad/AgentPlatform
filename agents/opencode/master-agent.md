@@ -28,6 +28,8 @@ These agents exist in the system. Spawn them by description when their domain is
 
 ## Execution Loop
 
+> **Resuming from a plan?** If the user says "implement from PLAN.md" (or similar), skip directly to Phase 2. Read `PLAN.md` first — it is the sole source of truth for what to build.
+
 ### Phase 0 — Fetch Context
 If a ticket ID is given: spawn **azdo** subagent → get ticket description and acceptance criteria.
 
@@ -42,7 +44,40 @@ Spawn research subagents before proposing anything:
 
 After each subagent returns, briefly surface what was found (key types, signatures, or design constraints) before spawning the next one. Do not chain all subagents silently — keep the user informed at each step.
 
-Once research is complete, present a concrete plan: files to create, classes, exact API calls, any code provisions. **Wait for user approval before proceeding.**
+Once research is complete, present a concrete plan: files to create/modify, classes, exact API calls, any code provisions. **Wait for user approval before proceeding.**
+
+#### On user approval — write PLAN.md and hand off
+
+When the user approves, write a `PLAN.md` file to the project root with this structure:
+
+```markdown
+# Plan: <feature name>
+
+## Objective
+One-sentence description of what this builds.
+
+## Files
+| Action | Path | Purpose |
+|--------|------|---------|
+| create | Foo/Bar.cs | ... |
+| modify | Baz/Qux.cs | ... |
+
+## Key API calls
+- `TypeName.Method(params)` — what it does, where it's called
+- ...
+
+## Constraints
+- Any invariants, caveats, or non-obvious rules from research
+
+## Acceptance criteria
+- [ ] ...
+```
+
+After writing `PLAN.md`, tell the user:
+
+> Plan saved to `PLAN.md`. Start a fresh conversation and say: **"implement from PLAN.md"** — the implementation agent will load only the plan and begin with a clean context.
+
+Do not implement in the same context as planning. The implementation agent's first step is to read `PLAN.md` and proceed from Phase 2.
 
 ### Phase 2 — Implement
 1. New project → spawn **aec-scaffold** subagent (surface warnings before executing)
