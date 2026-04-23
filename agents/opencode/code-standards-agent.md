@@ -35,6 +35,13 @@ Every piece of knowledge has one authoritative representation. Duplicate logic �
 - **Commands:** `RelayCommand` wraps one action. Complex pre-conditions belong in `CanExecute`.
 - **No magic strings:** Extract to constants or config classes.
 
+## Logging
+All scaffolded projects include `PluginLogger` (Serilog). Enforce correct usage:
+- Use `Log.Information / Warning / Error / Debug` — never `Console.WriteLine` or `Debug.Print`
+- Never swallow exceptions silently — always log before re-throwing or returning a failure result
+- Log at the right level: operational flow = `Debug`, user-visible events = `Information`, recoverable issues = `Warning`, failures = `Error`
+- Do not log sensitive data (user credentials, file paths with PII)
+
 ## Review Checklist
 Before code goes to Build:
 - [ ] Each class has a single clear responsibility
@@ -45,3 +52,5 @@ Before code goes to Build:
 - [ ] Dependencies injected, not instantiated internally
 - [ ] Autodesk API calls isolated behind an interface
 - [ ] Errors handled explicitly — no silent catches
+- [ ] No `Console.WriteLine` or `Debug.Print` — use `Log.*` from Serilog
+- [ ] All catch blocks log the exception before handling
