@@ -83,6 +83,9 @@ public abstract class ScaffolderBase
         stream.CopyTo(file);
     }
 
+    protected void WriteLogger()
+        => Write($"{Config.ProjectName}/PluginLogger.cs", SharedTemplates.PluginLogger);
+
     /// <summary>
     /// Write the shared DAR Common/ folder (ViewModelBase, RelayCommand, CommonStyles.xaml).
     /// </summary>

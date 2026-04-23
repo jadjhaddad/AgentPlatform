@@ -24,6 +24,7 @@ public class RevitScaffolder : ScaffolderBase
         WriteProjectFile();
         WriteRuntimeConfigs();
         WriteAddin();
+        WriteLogger();
         WriteApplication();
         WriteCommand();
 

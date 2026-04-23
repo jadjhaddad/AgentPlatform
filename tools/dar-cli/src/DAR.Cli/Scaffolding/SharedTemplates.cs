@@ -448,6 +448,36 @@ public static class SharedTemplates
         </ResourceDictionary>
         """;
 
+    // ── PluginLogger.cs ───────────────────────────────────────────────────
+    public const string PluginLogger = """
+        using Serilog;
+
+        namespace {{NAMESPACE}};
+
+        internal static class PluginLogger
+        {
+            internal static void Initialize(string vendorId, string pluginName)
+            {
+                var logDir = Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                    vendorId, pluginName, "logs");
+
+                Directory.CreateDirectory(logDir);
+
+                Log.Logger = new LoggerConfiguration()
+                    .MinimumLevel.Debug()
+                    .WriteTo.File(
+                        path: Path.Combine(logDir, "log-.txt"),
+                        rollingInterval: RollingInterval.Day,
+                        retainedFileCountLimit: 7,
+                        outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} [{Level:u3}] {Message:lj}{NewLine}{Exception}")
+                    .CreateLogger();
+            }
+
+            internal static void CloseAndFlush() => Log.CloseAndFlush();
+        }
+        """;
+
     // ── StaWindowLauncher.cs ──────────────────────────────────────────────
     public const string StaWindowLauncher = """
         using System.Threading;

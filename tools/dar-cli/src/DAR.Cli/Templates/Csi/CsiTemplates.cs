@@ -62,6 +62,12 @@ public static class CsiTemplates
             </Reference>
           </ItemGroup>
 
+          <!-- ── Logging (Serilog with rolling file sink) ──────────────── -->
+          <ItemGroup>
+            <PackageReference Include="Serilog" Version="3.1.1" />
+            <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
+          </ItemGroup>
+
         </Project>
         """;
 
@@ -110,6 +116,8 @@ public static class CsiTemplates
                 _sapModel = SapModel;
                 _callback = ISapPlugin;
 
+                PluginLogger.Initialize("{{VENDOR_ID}}", "{{PROJECT_NAME}}");
+
                 AppDomain.CurrentDomain.AssemblyResolve += (_, args) =>
                 {
                     var dir  = Path.GetDirectoryName(typeof(cPlugin).Assembly.Location)!;
@@ -120,7 +128,7 @@ public static class CsiTemplates
                 try
                 {
                     var form = new MainForm(_sapModel);
-                    form.FormClosed += (_, _) => _callback.Finish(0);
+                    form.FormClosed += (_, _) => { PluginLogger.CloseAndFlush(); _callback.Finish(0); };
                     form.Show();
                     // Main() returns immediately; form stays open.
                     // Finish() is called when the form closes.

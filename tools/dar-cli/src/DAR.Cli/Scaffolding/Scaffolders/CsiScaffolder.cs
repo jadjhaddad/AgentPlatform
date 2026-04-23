@@ -70,6 +70,7 @@ public class CsiScaffolder : ScaffolderBase
                 ["CSI_DEFAULT_HINT"]       = defaultHint,
             });
 
+        WriteLogger();
         Write($"{Config.ProjectName}/cPlugin.cs", CsiTemplates.CPluginStandard, CsiTokens());
         Write($"{Config.ProjectName}/MainForm.cs", CsiTemplates.MainForm, CsiTokens());
 

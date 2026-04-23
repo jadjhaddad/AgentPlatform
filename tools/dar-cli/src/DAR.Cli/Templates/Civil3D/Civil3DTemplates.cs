@@ -25,6 +25,12 @@ public static class Civil3DTemplates
           <!-- ── ASP.NET Core (EmbeddedServer only — net8.0+) ───────────── -->
           {{ASPNET_REF}}
 
+          <!-- ── Logging (Serilog with rolling file sink) ──────────────── -->
+          <ItemGroup>
+            <PackageReference Include="Serilog" Version="3.1.1" />
+            <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
+          </ItemGroup>
+
           <!-- ── Deploy bundle to %AppData%\Autodesk\ApplicationPlugins ──── -->
           <!-- Skipped on Linux/WSL dotnet build — run via 'vs build' to deploy -->
           <Target Name="DeployBundle" AfterTargets="Build"
@@ -188,13 +194,14 @@ public static class Civil3DTemplates
             public void Initialize()
             {
                 Instance = this;
+                PluginLogger.Initialize("{{VENDOR_ID}}", "{{PROJECT_NAME}}");
                 if (ComponentManager.Ribbon != null)
                     BuildRibbon();
                 else
                     ComponentManager.ItemInitialized += OnRibbonReady;
             }
 
-            public void Terminate() { }
+            public void Terminate() => PluginLogger.CloseAndFlush();
 
             private static void OnRibbonReady(object? sender, RibbonItemEventArgs e)
             {
@@ -259,8 +266,12 @@ public static class Civil3DTemplates
         public class Application : IExtensionApplication
         {
             public static Application? Instance { get; private set; }
-            public void Initialize() { Instance = this; }
-            public void Terminate() { }
+            public void Initialize()
+            {
+                Instance = this;
+                PluginLogger.Initialize("{{VENDOR_ID}}", "{{PROJECT_NAME}}");
+            }
+            public void Terminate() => PluginLogger.CloseAndFlush();
         }
         """;
 

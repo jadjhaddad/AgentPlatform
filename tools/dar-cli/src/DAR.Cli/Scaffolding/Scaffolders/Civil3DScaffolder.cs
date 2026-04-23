@@ -22,6 +22,7 @@ public class Civil3DScaffolder : ScaffolderBase
 
         WriteProjectFile();
         WritePackageContents();
+        WriteLogger();
         WriteApplication();
         WriteCommand();
 

@@ -36,6 +36,12 @@ public static class RevitTemplates
             </Content>
           </ItemGroup>
 
+          <!-- ── Logging (Serilog with rolling file sink) ──────────────── -->
+          <ItemGroup>
+            <PackageReference Include="Serilog" Version="3.1.1" />
+            <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
+          </ItemGroup>
+
           <!-- ── Resources dir property ─────────────────────────────────── -->
           <PropertyGroup>
             <ResourcesDir>$(SolutionDir)Resources</ResourcesDir>
@@ -141,6 +147,7 @@ public static class RevitTemplates
             public Result OnStartup(UIControlledApplication application)
             {
                 Instance = this;
+                PluginLogger.Initialize("{{VENDOR_ID}}", "{{PROJECT_NAME}}");
 
         #if NET48
                 AppDomain.CurrentDomain.AssemblyResolve += (_, args) =>
@@ -156,7 +163,10 @@ public static class RevitTemplates
             }
 
             public Result OnShutdown(UIControlledApplication application)
-                => Result.Succeeded;
+            {
+                PluginLogger.CloseAndFlush();
+                return Result.Succeeded;
+            }
 
             private static void CreateRibbon(UIControlledApplication application)
             {
@@ -208,6 +218,8 @@ public static class RevitTemplates
         {
             public Result OnStartup(UIControlledApplication application)
             {
+                PluginLogger.Initialize("{{VENDOR_ID}}", "{{PROJECT_NAME}}");
+
         #if NET48
                 AppDomain.CurrentDomain.AssemblyResolve += (_, args) =>
                 {
@@ -220,7 +232,10 @@ public static class RevitTemplates
             }
 
             public Result OnShutdown(UIControlledApplication application)
-                => Result.Succeeded;
+            {
+                PluginLogger.CloseAndFlush();
+                return Result.Succeeded;
+            }
         }
         """;
 
